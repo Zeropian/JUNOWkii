@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa - Your Royal Knowledge Companion</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables */
+        :root {
+            --primary-blue: #1e3a8a;
+            --secondary-blue: #1e40af;
+            --light-blue: #1d4ed8;
+            --purple: #7e22ce;
+            --pink: #ec4899;
+            --white: #ffffff;
+            --light-text: #dbeafe;
+            --dark-bg: #0f172a;
+        }
+
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-blue), var(--purple), var(--light-blue));
+            min-height: 100vh;
+            color: var(--white);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Language Selection Screen */
+        .language-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--purple), var(--light-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .language-content {
+            text-align: center;
+            max-width: 28rem;
+            padding: 2rem;
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(59, 130, 246, 0.5);
+        }
+
+        .language-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .language-subtitle {
+            font-size: 1rem;
+            color: #bfdbfe;
+            margin-bottom: 2rem;
+        }
+
+        .language-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .language-button {
+            padding: 1rem 1.5rem;
+            background-color: rgba(30, 64, 175, 0.5);
+            border: 1px solid #2563eb;
+            border-radius: 1rem;
+            color: #dbeafe;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .language-button:hover {
+            background-color: rgba(37, 99, 235, 0.7);
+            border-color: #60a5fa;
+            color: var(--white);
+        }
+
+        /* Intro Screen */
+        .intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--purple), var(--light-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .intro-content {
+            text-align: center;
+        }
+
+        .globe-container {
+            width: 8rem;
+            height: 8rem;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+
+        .globe {
+            width: 8rem;
+            height: 8rem;
+            color: #93c5fd;
+            margin: 0 auto;
+        }
+
+        .rotating-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #60a5fa;
+            opacity: 0.3;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .intro-title {
+            font-size: 2.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .intro-subtitle {
+            font-size: 1.25rem;
+            color: #bfdbfe;
+            margin-bottom: 2rem;
+            max-width: 28rem;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 0.8s ease-out 0.5s both;
+        }
+
+        .intro-line {
+            width: 4rem;
+            height: 0.25rem;
+            background-color: #60a5fa;
+            margin: 0 auto;
+            border-radius: 0.125rem;
+            animation: scaleIn 0.8s ease-out 1.5s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        /* Main App */
+        .app-container {
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.5);
+        }
+
+        .header-content {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 1rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(to right, #60a5fa, #a855f7);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .header-tagline {
+            font-size: 0.875rem;
+            color: #bfdbfe;
+        }
+
+        /* Search Section */
+        .search-section {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 0 1rem;
+        }
+
+        .search-title {
+            font-size: 2.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .search-subtitle {
+            font-size: 1.25rem;
+            color: #bfdbfe;
+            margin-bottom: 2rem;
+            max-width: 42rem;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .search-form {
+            max-width: 42rem;
+            margin: 0 auto;
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #93c5fd;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 3rem 1rem 3rem;
+            font-size: 1.125rem;
+            background-color: rgba(30, 64, 175, 0.5);
+            border: 1px solid #2563eb;
+            border-radius: 1rem;
+            color: var(--white);
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: #93c5fd;
+        }
+
+        .search-input:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.3);
+        }
+
+        .search-button {
+            position: absolute;
+            right: 0.5rem;
+            top: 0.5rem;
+            background: linear-gradient(to right, #3b82f6, #a855f7);
+            color: var(--white);
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .search-button:hover {
+            background: linear-gradient(to right, #2563eb, #9333ea);
+        }
+
+        .search-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .topics-section {
+            margin-top: 2rem;
+            animation: fadeInUp 0.6s ease-out 0.6s both;
+        }
+
+        .topics-title {
+            color: #bfdbfe;
+            margin-bottom: 1rem;
+        }
+
+        .topics-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .topic-button {
+            padding: 0.5rem 1rem;
+            background-color: rgba(30, 64, 175, 0.5);
+            border: 1px solid #2563eb;
+            border-radius: 9999px;
+            color: #dbeafe;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .topic-button:hover {
+            background-color: rgba(37, 99, 235, 0.7);
+            border-color: #60a5fa;
+            color: var(--white);
+        }
+
+        /* Error Message */
+        .error-message {
+            max-width: 64rem;
+            margin: 0 auto 2rem;
+            background-color: rgba(127, 29, 29, 0.3);
+            border: 1px solid #dc2626;
+            border-radius: 1rem;
+            padding: 1.5rem;
+        }
+
+        .error-text {
+            color: #fecaca;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Article Grid */
+        .article-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+            .article-grid {
+                grid-template-columns: 1fr 2fr;
+            }
+        }
+
+        /* Robot Section */
+        .robot-section {
+            background-color: rgba(30, 58, 138, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            height: 100%;
+        }
+
+        .robot-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .robot-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .robot-subtitle {
+            color: #bfdbfe;
+        }
+
+        /* Female Robot */
+        .robot-container {
+            position: relative;
+            margin: 0 auto 1.5rem;
+            width: 16rem;
+            height: 20rem;
+            background: linear-gradient(135deg, #2563eb, #7e22ce);
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .robot-body {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            bottom: 1rem;
+            left: 1rem;
+            background: linear-gradient(to bottom, #fbcfe8, #f9a8d4);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .robot-head {
+            width: 8rem;
+            height: 9rem;
+            background: linear-gradient(to bottom, #fdf2f8, #fce7f3);
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .robot-hair {
+            position: absolute;
+            top: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 7rem;
+            height: 2rem;
+            background: linear-gradient(to right, #f472b6, #c084fc);
+            border-radius: 50% 50% 0 0;
+        }
+
+        .robot-eye {
+            position: absolute;
+            top: 2rem;
+            width: 1rem;
+            height: 1rem;
+            background: linear-gradient(to bottom, #1e40af, #1e3a8a);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .robot-eye.left {
+            left: 1.5rem;
+        }
+
+        .robot-eye.right {
+            right: 1.5rem;
+        }
+
+        .robot-eyebrow {
+            position: absolute;
+            top: 1rem;
+            width: 2rem;
+            height: 0.25rem;
+            background-color: #db2777;
+            border-radius: 0.125rem;
+        }
+
+        .robot-eyebrow.left {
+            left: 1rem;
+            transform: rotate(12deg);
+        }
+
+        .robot-eyebrow.right {
+            right: 1rem;
+            transform: rotate(-12deg);
+        }
+
+        /* Robot Expressions */
+        .robot-mouth.talking {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3rem;
+            height: 0.5rem;
+            background-color: #ec4899;
+            border-radius: 0.25rem;
+            animation: pulse 1s infinite;
+        }
+
+        .robot-mouth.happy {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2rem;
+            height: 1rem;
+            border-bottom: 4px solid #ec4899;
+            border-radius: 0 0 1rem 1rem;
+        }
+
+        .robot-mouth.excited {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2.5rem;
+            height: 0.75rem;
+            background-color: #fbbf24;
+            border-radius: 0.25rem;
+        }
+
+        .robot-mouth.sad {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2rem;
+            height: 0.5rem;
+            border-top: 4px solid #60a5fa;
+            border-radius: 1rem 1rem 0 0;
+        }
+
+        .robot-mouth.confused {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 4px solid #f59e0b;
+            border-radius: 50%;
+        }
+
+        .robot-mouth.neutral {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2rem;
+            height: 0.25rem;
+            background-color: #db2777;
+            border-radius: 0.125rem;
+        }
+
+        .robot-body-base {
+            position: absolute;
+            bottom: 0;
+            width: 6rem;
+            height: 4rem;
+            background: linear-gradient(to bottom, #fbcfe8, #f9a8d4);
+            border-radius: 0 0 1rem 1rem;
+        }
+
+        .robot-antenna {
+            position: absolute;
+            top: 0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0.25rem;
+            height: 2rem;
+            background-color: #f9a8d4;
+            border-radius: 0.125rem;
+        }
+
+        .robot-gem {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1rem;
+            height: 1rem;
+            background: linear-gradient(to right, #60a5fa, #a855f7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Robot Controls */
+        .robot-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .listen-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .listen-button.speaking {
+            background-color: #ef4444;
+            color: var(--white);
+        }
+
+        .listen-button.speaking:hover {
+            background-color: #dc2626;
+        }
+
+        .listen-button.not-speaking {
+            background: linear-gradient(to right, #3b82f6, #a855f7);
+            color: var(--white);
+        }
+
+        .listen-button.not-speaking:hover {
+            background: linear-gradient(to right, #2563eb, #9333ea);
+        }
+
+        .mute-button {
+            padding: 0.75rem;
+            background-color: rgba(30, 64, 175, 0.5);
+            border: 1px solid #2563eb;
+            border-radius: 0.75rem;
+            color: #bfdbfe;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .mute-button:hover {
+            background-color: rgba(37, 99, 235, 0.7);
+        }
+
+        .robot-status {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .status-text {
+            font-size: 0.875rem;
+            color: #bfdbfe;
+            text-transform: capitalize;
+        }
+
+        /* Article Content */
+        .article-content {
+            background-color: rgba(30, 58, 138, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            height: 100%;
+        }
+
+        .article-title {
+            font-size: 1.875rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .article-summary {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: rgba(30, 64, 175, 0.3);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 0.75rem;
+        }
+
+        .summary-text {
+            color: #dbeafe;
+            line-height: 1.6;
+        }
+
+        .article-body {
+            margin-bottom: 2rem;
+        }
+
+        .article-text {
+            color: #dbeafe;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Images Section */
+        .images-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .images-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .images-icon {
+            margin-right: 0.5rem;
+            color: #a855f7;
+        }
+
+        .images-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .images-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .image-container {
+            overflow: hidden;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            transition: transform 0.3s;
+        }
+
+        .image-container:hover {
+            transform: scale(1.05);
+        }
+
+        .article-image {
+            width: 100%;
+            height: 12rem;
+            object-fit: cover;
+        }
+
+        /* Learning Tips */
+        .learning-tips {
+            background: linear-gradient(to right, rgba(30, 64, 175, 0.3), rgba(107, 33, 168, 0.3));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .tips-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .tips-list {
+            color: #bfdbfe;
+            list-style-type: none;
+        }
+
+        .tip-item {
+            margin-bottom: 0.25rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .empty-icon {
+            width: 6rem;
+            height: 6rem;
+            background: linear-gradient(to right, #60a5fa, #a855f7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-text {
+            color: #bfdbfe;
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selection Screen -->
+    <div id="languageScreen" class="language-screen">
+        <div class="language-content">
+            <h1 class="language-title">Choose Your Language</h1>
+            <p class="language-subtitle">Select your preferred language for the interface</p>
+            <div class="language-options">
+                <button class="language-button" data-lang="en">English</button>
+                <button class="language-button" data-lang="hi">Hindi</button>
+                <button class="language-button" data-lang="it">Italian</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intro Screen -->
+    <div id="introScreen" class="intro-screen hidden">
+        <div class="intro-content">
+            <div class="globe-container">
+                <i class="fas fa-globe-americas globe"></i>
+                <div class="rotating-border"></div>
+            </div>
+            <h1 class="intro-title">Welcome to Medusa</h1>
+            <p class="intro-subtitle">Embark on a journey through the universe of knowledge with your AI companion</p>
+            <div class="intro-line"></div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="appContainer" class="app-container hidden">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h1 class="logo-text" data-i18n="medusa">Medusa</h1>
+                </div>
+                <div class="header-tagline" data-i18n="your_sweet_knowledge_companion">Your sweet Knowledge Companion</div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Search Section -->
+            <section class="search-section">
+                <h2 class="search-title" data-i18n="discover_knowledge">Discover Knowledge with Your Royal AI Waifu</h2>
+                <p class="search-subtitle" data-i18n="search_any_topic">Search any topic and let our elegant waifu guide you through fascinating stories with soft and Heart magic !</p>
+                
+                <form id="searchForm" class="search-form">
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" class="search-input" data-i18n-placeholder="come_there" placeholder="Come there...">
+                        <button type="submit" id="searchButton" class="search-button" data-i18n="try_here">Try here</button>
+                    </div>
+                </form>
+
+                <!-- Sample Topics -->
+                <div class="topics-section">
+                    <p class="topics-title" data-i18n="try_these_sweetie">Try these sweetie:</p>
+                    <div class="topics-container">
+                        <button class="topic-button" data-topic="Albert Einstein">Albert Einstein</button>
+                        <button class="topic-button" data-topic="Leonardo da Vinci">Leonardo da Vinci</button>
+                        <button class="topic-button" data-topic="Marie Curie">Marie Curie</button>
+                        <button class="topic-button" data-topic="Pyramids of Giza">Pyramids of Giza</button>
+                        <button class="topic-button" data-topic="Renaissance Art">Renaissance Art</button>
+                        <button class="topic-button" data-topic="Quantum Physics">Quantum Physics</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="error-message hidden">
+                <p id="errorText" class="error-text"></p>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="main-content-area">
+                <!-- Article Display -->
+                <div id="articleGrid" class="article-grid hidden">
+                    <!-- Robot Section -->
+                    <div class="robot-section">
+                        <div class="robot-header">
+                            <h3 class="robot-title" data-i18n="your_royal_ai_teacher">Your Royal AI Teacher</h3>
+                            <p class="robot-subtitle" data-i18n="ready_to_share">Ready to share an amazing story!</p>
+                        </div>
+                        
+                        <!-- Female Robot -->
+                        <div class="robot-container">
+                            <div class="robot-body">
+                                <!-- Robot Head -->
+                                <div class="robot-head">
+                                    <div class="robot-hair"></div>
+                                    
+                                    <!-- Eyes -->
+                                    <div class="robot-eye left"></div>
+                                    <div class="robot-eye right"></div>
+                                    
+                                    <!-- Eyebrows -->
+                                    <div class="robot-eyebrow left"></div>
+                                    <div class="robot-eyebrow right"></div>
+                                    
+                                    <!-- Mouth - changes based on expression -->
+                                    <div id="robotMouth" class="robot-mouth neutral"></div>
+                                </div>
+                                
+                                <!-- Body -->
+                                <div class="robot-body-base"></div>
+                            </div>
+                            
+                            <!-- Antenna with gem -->
+                            <div class="robot-antenna">
+                                <div class="robot-gem">
+                                    <i class="fas fa-sparkle" style="font-size: 0.5rem; color: white;"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Controls -->
+                        <div class="robot-controls">
+                            <button id="listenButton" class="listen-button not-speaking">
+                                <i class="fas fa-play"></i>
+                                <span data-i18n="listen">Listen</span>
+                            </button>
+                            
+                            <button id="muteButton" class="mute-button">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                        </div>
+
+                        <div class="robot-status">
+                            <p id="statusText" class="status-text" data-i18n="sweetie_is_feeling">sweetie is feeling: neutral</p>
+                        </div>
+                    </div>
+
+                    <!-- Article Content -->
+                    <div class="article-content">
+                        <h2 id="articleTitle" class="article-title"></h2>
+                        
+                        <div class="article-summary">
+                            <p id="articleSummary" class="summary-text"></p>
+                        </div>
+
+                        <div class="article-body">
+                            <p id="articleContent" class="article-text"></p>
+                        </div>
+
+                        <!-- Images -->
+                        <div class="images-section">
+                            <h3 class="images-title">
+                                <i class="fas fa-sparkle images-icon"></i>
+                                <span data-i18n="visual_journey">Visual Journey</span>
+                            </h3>
+                            <div id="imagesGrid" class="images-grid">
+                                <!-- Images will be added here dynamically -->
+                            </div>
+                        </div>
+
+                        <div class="learning-tips">
+                            <h4 class="tips-title" data-i18n="interactive_learning_tips">Interactive Learning Tips:</h4>
+                            <ul class="tips-list">
+                                <li class="tip-item" data-i18n="tip_listen">• Click "Listen" to hear the story narrated by your elegant AI teacher</li>
+                                <li class="tip-item" data-i18n="tip_volume">• Use the volume control to adjust audio levels</li>
+                                <li class="tip-item" data-i18n="tip_expressions">• Watch your AI teacher's expressions change as she tells the story</li>
+                                <li class="tip-item" data-i18n="tip_images">• Explore the images to visualize key moments in history</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-book-open" style="font-size: 2rem;"></i>
+                    </div>
+                    <h3 class="empty-title" data-i18n="start_your_royal_journey">Start Your Royal Learning Journey</h3>
+                    <p class="empty-text" data-i18n="search_for_any_topic">Search for any topic above or try one of our suggested topics to begin!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Language translations
+        const translations = {
+            en: {
+                medusa: "Medusa",
+                your_sweet_knowledge_companion: "Your sweet Knowledge Companion",
+                discover_knowledge: "Discover Knowledge with Your Royal AI Waifu",
+                search_any_topic: "Search any topic and let our elegant waifu guide you through fascinating stories with soft and Heart magic !",
+                come_there: "Come there...",
+                try_here: "Try here",
+                try_these_sweetie: "Try these sweetie:",
+                your_royal_ai_teacher: "Your Royal AI Teacher",
+                ready_to_share: "Ready to share an amazing story!",
+                listen: "Listen",
+                sweetie_is_feeling: "sweetie is feeling:",
+                visual_journey: "Visual Journey",
+                interactive_learning_tips: "Interactive Learning Tips:",
+                tip_listen: "• Click \"Listen\" to hear the story narrated by your elegant AI teacher",
+                tip_volume: "• Use the volume control to adjust audio levels",
+                tip_expressions: "• Watch your AI teacher's expressions change as she tells the story",
+                tip_images: "• Explore the images to visualize key moments in history",
+                start_your_royal_journey: "Start Your Royal Learning Journey",
+                search_for_any_topic: "Search for any topic above or try one of our suggested topics to begin!",
+                searching: "Searching...",
+                article_not_found: "Article not found. Please try a different search term.",
+                no_images_available: "No images available for this article.",
+                error_fetching_data: "Error fetching data. Please try again later."
+            },
+            hi: {
+                medusa: "मेडुसा",
+                your_sweet_knowledge_companion: "आपका प्यारा ज्ञान साथी",
+                discover_knowledge: "अपनी शाही AI वाइफू के साथ ज्ञान की खोज करें",
+                search_any_topic: "कोई भी विषय खोजें और हमारी सुंदर वाइफू आपको मनोरम कहानियों के माध्यम से नरम और दिल की जादू के साथ मार्गदर्शन करेगी!",
+                come_there: "यहाँ आओ...",
+                try_here: "यहाँ प्रयास करें",
+                try_these_sweetie: "इन्हें आज़माएं प्यारे:",
+                your_royal_ai_teacher: "आपकी शाही AI शिक्षिका",
+                ready_to_share: "एक अद्भुत कहानी साझा करने के लिए तैयार!",
+                listen: "सुनें",
+                sweetie_is_feeling: "प्यारी महसूस कर रही है:",
+                visual_journey: "दृश्य यात्रा",
+                interactive_learning_tips: "इंटरैक्टिव लर्निंग टिप्स:",
+                tip_listen: "• अपनी सुंदर AI शिक्षिका द्वारा सुनाने वाली कहानी सुनने के लिए \"सुनें\" पर क्लिक करें",
+                tip_volume: "• ऑडियो स्तर को समायोजित करने के लिए वॉल्यूम नियंत्रण का उपयोग करें",
+                tip_expressions: "• अपनी AI शिक्षिका के भावों को बदलते हुए देखें जब वह कहानी सुनाती है",
+                tip_images: "• इतिहास के महत्वपूर्ण क्षणों की कल्पना करने के लिए छवियों का अन्वेषण करें",
+                start_your_royal_journey: "अपनी शाही सीखने की यात्रा शुरू करें",
+                search_for_any_topic: "ऊपर किसी भी विषय को खोजें या शुरू करने के लिए हमारे सुझाए गए विषयों में से एक को आज़माएं!",
+                searching: "खोज रहा है...",
+                article_not_found: "लेख नहीं मिला। कृपया एक अलग खोज शब्द आज़माएं।",
+                no_images_available: "इस लेख के लिए कोई छवियां उपलब्ध नहीं हैं।",
+                error_fetching_data: "डेटा प्राप्त करने में त्रुटि। कृपया बाद में पुनः प्रयास करें।"
+            },
+            it: {
+                medusa: "Medusa",
+                your_sweet_knowledge_companion: "Il tuo dolce compagno di conoscenza",
+                discover_knowledge: "Scopri la conoscenza con la tua regale AI Waifu",
+                search_any_topic: "Cerca qualsiasi argomento e lascia che la nostra elegante waifu ti guidi attraverso storie affascinanti con magia morbida e del cuore!",
+                come_there: "Vieni qui...",
+                try_here: "Prova qui",
+                try_these_sweetie: "Prova questi dolcezza:",
+                your_royal_ai_teacher: "Il tuo insegnante AI reale",
+                ready_to_share: "Pronto a condividere una storia fantastica!",
+                listen: "Ascolta",
+                sweetie_is_feeling: "dolcezza si sente:",
+                visual_journey: "Viaggio visivo",
+                interactive_learning_tips: "Suggerimenti per l'apprendimento interattivo:",
+                tip_listen: "• Fai clic su \"Ascolta\" per ascoltare la storia narrata dal tuo elegante insegnante AI",
+                tip_volume: "• Usa il controllo del volume per regolare i livelli audio",
+                tip_expressions: "• Guarda le espressioni del tuo insegnante AI cambiare mentre racconta la storia",
+                tip_images: "• Esplora le immagini per visualizzare i momenti chiave della storia",
+                start_your_royal_journey: "Inizia il tuo viaggio di apprendimento reale",
+                search_for_any_topic: "Cerca qualsiasi argomento sopra o prova uno dei nostri argomenti suggeriti per iniziare!",
+                searching: "Ricerca in corso...",
+                article_not_found: "Articolo non trovato. Prova un termine di ricerca diverso.",
+                no_images_available: "Nessuna immagine disponibile per questo articolo.",
+                error_fetching_data: "Errore nel recupero dei dati. Riprova più tardi."
+            }
+        };
+
+        // Wikipedia API base 
+        const WIKIPEDIA_API_BASE = 'https://en.wikipedia.org/api/rest_v1';
+
+        // State variables
+        let currentArticle = null;
+        let isSpeaking = false;
+        let isMuted = false;
+        let robotExpression = 'neutral';
+        let isLoading = false;
+        let selectedLanguage = 'en';
+
+        // DOM elements
+        const languageScreen = document.getElementById('languageScreen');
+        const introScreen = document.getElementById('introScreen');
+        const appContainer = document.getElementById('appContainer');
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const topicButtons = document.querySelectorAll('.topic-button');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const articleGrid = document.getElementById('articleGrid');
+        const emptyState = document.getElementById('emptyState');
+        const robotMouth = document.getElementById('robotMouth');
+        const statusText = document.getElementById('statusText');
+        const listenButton = document.getElementById('listenButton');
+        const muteButton = document.getElementById('muteButton');
+        const articleTitle = document.getElementById('articleTitle');
+        const articleSummary = document.getElementById('articleSummary');
+        const articleContent = document.getElementById('articleContent');
+        const imagesGrid = document.getElementById('imagesGrid');
+
+        // Event listeners for language selection
+        document.querySelectorAll('.language-button').forEach(button => {
+            button.addEventListener('click', () => {
+                selectedLanguage = button.getAttribute('data-lang');
+                setLanguage(selectedLanguage);
+                languageScreen.classList.add('hidden');
+                introScreen.classList.remove('hidden');
+                
+                // Show main app after intro
+                setTimeout(() => {
+                    introScreen.classList.add('hidden');
+                    appContainer.classList.remove('hidden');
+                }, 5000);
+            });
+        });
+
+        // Event listeners
+        searchForm.addEventListener('submit', handleSearch);
+        
+        topicButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const topic = button.getAttribute('data-topic');
+                handleTopicClick(topic);
+            });
+        });
+
+        listenButton.addEventListener('click', toggleSpeech);
+        muteButton.addEventListener('click', toggleMute);
+
+        // Functions
+        function setLanguage(lang) {
+            selectedLanguage = lang;
+            
+            // Update all elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update placeholder text
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+        }
+
+        function handleSearch(e) {
+            e.preventDefault();
+            if (!searchInput.value.trim()) return;
+
+            searchArticle(searchInput.value);
+        }
+
+        function handleTopicClick(topic) {
+            searchInput.value = topic;
+            searchArticle(topic);
+        }
+
+        async function searchArticle(term) {
+            isLoading = true;
+            searchButton.disabled = true;
+            searchButton.innerHTML = `<span class="loading-spinner"></span>${translations[selectedLanguage].searching}`;
+            errorMessage.classList.add('hidden');
+
+            try {
+                // Fetch Wikipedia article summary
+                const response = await fetch(`${WIKIPEDIA_API_BASE}/page/summary/${encodeURIComponent(term)}`);
+                
+                if (!response.ok) {
+                    throw new Error(translations[selectedLanguage].article_not_found);
+                }
+                
+                const data = await response.json();
+                
+                // Fetch images for the article
+                let images = [];
+                try {
+                    const imagesResponse = await fetch(`${WIKIPEDIA_API_BASE}/page/media-list/${encodeURIComponent(term)}`);
+                    if (imagesResponse.ok) {
+                        const imagesData = await imagesResponse.json();
+                        images = imagesData.items
+                            .filter(item => item.type === 'image')
+                            .slice(0, 3)
+                            .map(item => item.srcset && item.srcset[0] ? item.srcset[0].src : null)
+                            .filter(src => src);
+                    }
+                } catch (error) {
+                    console.error('Error fetching images:', error);
+                }
+
+                // If no images found, use placeholder
+                if (images.length === 0) {
+                    images = [
+                        'https://placehold.co/400x300/1E3A8A/FFFFFF?text=No+Image+Available',
+                        'https://placehold.co/400x300/1E40AF/FFFFFF?text=No+Image+Available',
+                        'https://placehold.co/400x300/1D4ED8/FFFFFF?text=No+Image+Available'
+                    ];
+                }
+
+                const article = {
+                    title: data.title,
+                    summary: data.description || data.extract,
+                    content: data.extract,
+                    images: images
+                };
+
+                displayArticle(article);
+                setRobotExpression('excited');
+            } catch (error) {
+                showError(error.message);
+                setRobotExpression('sad');
+            } finally {
+                isLoading = false;
+                searchButton.disabled = false;
+                searchButton.textContent = translations[selectedLanguage].try_here;
+            }
+        }
+
+        function displayArticle(article) {
+            currentArticle = article;
+            
+            // Update article content
+            articleTitle.textContent = article.title;
+            articleSummary.textContent = article.summary;
+            articleContent.textContent = article.content;
+            
+            // Update images
+            imagesGrid.innerHTML = '';
+            article.images.forEach(img => {
+                const imageContainer = document.createElement('div');
+                imageContainer.className = 'image-container';
+                
+                const image = document.createElement('img');
+                image.src = img;
+                image.alt = `${article.title} image`;
+                image.className = 'article-image';
+                
+                imageContainer.appendChild(image);
+                imagesGrid.appendChild(imageContainer);
+            });
+            
+            // Show article and hide empty state
+            articleGrid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+        }
+
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.classList.remove('hidden');
+            
+            // Hide article if showing
+            articleGrid.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+        }
+
+        function setRobotExpression(expression) {
+            robotExpression = expression;
+            
+            // Remove all mouth classes
+            robotMouth.className = 'robot-mouth';
+            
+            // Add the current expression class
+            robotMouth.classList.add(expression);
+            
+            // Update status text
+            const statusPrefix = translations[selectedLanguage].sweetie_is_feeling;
+            statusText.textContent = `${statusPrefix} ${expression}`;
+        }
+
+        function toggleSpeech() {
+            if (!currentArticle) return;
+            
+            if (isSpeaking) {
+                // Stop speaking
+                if (window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                }
+                isSpeaking = false;
+                listenButton.className = 'listen-button not-speaking';
+                listenButton.innerHTML = '<i class="fas fa-play"></i><span>' + translations[selectedLanguage].listen + '</span>';
+                setRobotExpression('neutral');
+            } else {
+                // Start speaking
+                if (window.speechSynthesis) {
+                    const utterance = new SpeechSynthesisUtterance(currentArticle.content);
+                    utterance.rate = 0.8;
+                    utterance.pitch = 1.2;
+                    utterance.volume = isMuted ? 0 : 1;
+                    
+                    utterance.onstart = () => {
+                        isSpeaking = true;
+                        listenButton.className = 'listen-button speaking';
+                        listenButton.innerHTML = '<i class="fas fa-square"></i><span>Stop</span>';
+                        setRobotExpression('talking');
+                    };
+                    
+                    utterance.onend = () => {
+                        isSpeaking = false;
+                        listenButton.className = 'listen-button not-speaking';
+                        listenButton.innerHTML = '<i class="fas fa-play"></i><span>' + translations[selectedLanguage].listen + '</span>';
+                        setRobotExpression('happy');
+                    };
+                    
+                    utterance.onerror = () => {
+                        isSpeaking = false;
+                        listenButton.className = 'listen-button not-speaking';
+                        listenButton.innerHTML = '<i class="fas fa-play"></i><span>' + translations[selectedLanguage].listen + '</span>';
+                        setRobotExpression('confused');
+                    };
+                    
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    alert('Text-to-speech is not supported in your browser.');
+                }
+            }
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            
+            if (isMuted) {
+                muteButton.innerHTML = '<i class="fas fa-volume-mute"></i>';
+            } else {
+                muteButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+            }
+            
+            // If currently speaking, update the volume
+            if (isSpeaking && window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+                toggleSpeech(); // This will restart with the new volume
+            }
+        }
+    </script>
+</body>
+</html>
