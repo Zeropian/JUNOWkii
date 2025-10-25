@@ -18,6 +18,11 @@
             --white: #ffffff;
             --light-text: #dbeafe;
             --dark-bg: #0f172a;
+            --dark-gray: #1a1a1a;
+            --medium-gray: #2d2d2d;
+            --light-gray: #3d3d3d;
+            --accent-color: #7e22ce;
+            --accent-hover: #9333ea;
         }
 
         /* Global Styles */
@@ -36,6 +41,141 @@
 
         .hidden {
             display: none !important;
+        }
+
+        /* Startup Screen */
+        .startup-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--dark-gray), var(--medium-gray), var(--light-gray));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            overflow: hidden;
+        }
+
+        .startup-content {
+            text-align: center;
+            max-width: 36rem;
+            padding: 2rem;
+            background-color: rgba(26, 26, 26, 0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(126, 34, 206, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        }
+
+        .startup-logo {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #7e22ce, #ec4899);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: logoGlow 3s infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            0% {
+                filter: drop-shadow(0 0 5px rgba(126, 34, 206, 0.7));
+            }
+            100% {
+                filter: drop-shadow(0 0 15px rgba(236, 72, 153, 0.9));
+            }
+        }
+
+        .startup-title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #ffffff, #d1d5db);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .startup-subtitle {
+            font-size: 1.25rem;
+            color: #9ca3af;
+            margin-bottom: 2rem;
+            max-width: 28rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .startup-button {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(to right, var(--accent-color), var(--pink));
+            border: none;
+            border-radius: 1rem;
+            color: var(--white);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.125rem;
+            font-weight: 600;
+            transform-origin: center;
+            box-shadow: 0 10px 20px -5px rgba(126, 34, 206, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .startup-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .startup-button:hover::before {
+            left: 100%;
+        }
+
+        .startup-button:hover {
+            background: linear-gradient(to right, var(--accent-hover), #f472b6);
+            box-shadow: 0 15px 25px -5px rgba(126, 34, 206, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .startup-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(126, 34, 206, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
         }
 
         /* Language Selection Screen */
@@ -359,6 +499,48 @@
             background-color: rgba(37, 99, 235, 0.7);
             border-color: #60a5fa;
             color: var(--white);
+        }
+
+        /* Browser History Suggestions */
+        .history-section {
+            margin-top: 2rem;
+            animation: fadeInUp 0.6s ease-out 0.8s both;
+        }
+
+        .history-title {
+            color: #bfdbfe;
+            margin-bottom: 1rem;
+        }
+
+        .history-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .history-button {
+            padding: 0.5rem 1rem;
+            background-color: rgba(59, 130, 246, 0.3);
+            border: 1px solid #3b82f6;
+            border-radius: 9999px;
+            color: #dbeafe;
+            cursor: pointer;
+            transition: all 0.3s;
+            transform-origin: center;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .history-button:hover {
+            background-color: rgba(37, 99, 235, 0.7);
+            border-color: #60a5fa;
+            color: var(--white);
+        }
+
+        .history-icon {
+            font-size: 0.75rem;
         }
 
         /* Error Message */
@@ -890,8 +1072,21 @@
     </style>
 </head>
 <body>
+    <!-- Startup Screen -->
+    <div id="startupScreen" class="startup-screen">
+        <div class="startup-particles" id="particlesContainer"></div>
+        <div class="startup-content">
+            <div class="startup-logo">
+                <i class="fas fa-crown"></i>
+            </div>
+            <h1 class="startup-title">MEDUSA</h1>
+            <p class="startup-subtitle">Your Royal AI Knowledge Companion - Where elegance meets intelligence</p>
+            <button id="startupButton" class="startup-button">Enter the Realm of Knowledge</button>
+        </div>
+    </div>
+
     <!-- Language Selection Screen -->
-    <div id="languageScreen" class="language-screen">
+    <div id="languageScreen" class="language-screen hidden">
         <div class="language-content">
             <h1 class="language-title">Choose Your Language</h1>
             <p class="language-subtitle">Select your preferred language for the interface</p>
@@ -955,6 +1150,14 @@
                         <button class="topic-button" data-topic="Pyramids of Giza">Pyramids of Giza</button>
                         <button class="topic-button" data-topic="Renaissance Art">Renaissance Art</button>
                         <button class="topic-button" data-topic="Quantum Physics">Quantum Physics</button>
+                    </div>
+                </div>
+
+                <!-- Browser History Suggestions -->
+                <div id="historySection" class="history-section hidden">
+                    <p class="history-title" data-i18n="your_recent_searches">Your recent searches:</p>
+                    <div id="historyContainer" class="history-container">
+                        <!-- History items will be added dynamically -->
                     </div>
                 </div>
             </section>
@@ -1081,6 +1284,7 @@
                 come_there: "Come there...",
                 try_here: "Try here",
                 try_these_sweetie: "Try these sweetie:",
+                your_recent_searches: "Your recent searches:",
                 your_royal_ai_teacher: "Your Royal AI Teacher",
                 ready_to_share: "Ready to share an amazing story!",
                 listen: "Listen",
@@ -1106,6 +1310,7 @@
                 come_there: "यहाँ आओ...",
                 try_here: "यहाँ प्रयास करें",
                 try_these_sweetie: "इन्हें आज़माएं प्यारे:",
+                your_recent_searches: "आपकी हाल की खोजें:",
                 your_royal_ai_teacher: "आपकी शाही AI शिक्षिका",
                 ready_to_share: "एक अद्भुत कहानी साझा करने के लिए तैयार!",
                 listen: "सुनें",
@@ -1131,6 +1336,7 @@
                 come_there: "Vieni qui...",
                 try_here: "Prova qui",
                 try_these_sweetie: "Prova questi dolcezza:",
+                your_recent_searches: "Le tue ricerche recenti:",
                 your_royal_ai_teacher: "Il tuo insegnante AI reale",
                 ready_to_share: "Pronto a condividere una storia fantastica!",
                 listen: "Ascolta",
@@ -1152,6 +1358,8 @@
 
         // Wikipedia API base 
         const WIKIPEDIA_API_BASE = 'https://en.wikipedia.org/api/rest_v1';
+        // DuckDuckGo API base
+        const DUCKDUCKGO_API_BASE = 'https://api.duckduckgo.com/';
 
         // State variables
         let currentArticle = null;
@@ -1160,8 +1368,12 @@
         let robotExpression = 'neutral';
         let isLoading = false;
         let selectedLanguage = 'en';
+        let searchHistory = [];
 
         // DOM elements
+        const startupScreen = document.getElementById('startupScreen');
+        const startupButton = document.getElementById('startupButton');
+        const particlesContainer = document.getElementById('particlesContainer');
         const languageScreen = document.getElementById('languageScreen');
         const introScreen = document.getElementById('introScreen');
         const appContainer = document.getElementById('appContainer');
@@ -1169,6 +1381,8 @@
         const searchInput = document.getElementById('searchInput');
         const searchButton = document.getElementById('searchButton');
         const topicButtons = document.querySelectorAll('.topic-button');
+        const historySection = document.getElementById('historySection');
+        const historyContainer = document.getElementById('historyContainer');
         const errorMessage = document.getElementById('errorMessage');
         const errorText = document.getElementById('errorText');
         const articleGrid = document.getElementById('articleGrid');
@@ -1181,6 +1395,69 @@
         const articleSummary = document.getElementById('articleSummary');
         const articleContent = document.getElementById('articleContent');
         const imagesGrid = document.getElementById('imagesGrid');
+
+        // Initialize startup particles
+        function initParticles() {
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random size and position
+                const size = Math.random() * 10 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // Random animation delay
+                particle.style.animationDelay = `${Math.random() * 15}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Load search history from localStorage
+        function loadSearchHistory() {
+            const savedHistory = localStorage.getItem('medusaSearchHistory');
+            if (savedHistory) {
+                searchHistory = JSON.parse(savedHistory);
+                updateHistoryDisplay();
+            }
+        }
+
+        // Save search to history
+        function saveToHistory(searchTerm) {
+            // Avoid duplicates
+            if (!searchHistory.includes(searchTerm)) {
+                searchHistory.unshift(searchTerm);
+                // Keep only the last 10 searches
+                if (searchHistory.length > 10) {
+                    searchHistory.pop();
+                }
+                localStorage.setItem('medusaSearchHistory', JSON.stringify(searchHistory));
+                updateHistoryDisplay();
+            }
+        }
+
+        // Update history display
+        function updateHistoryDisplay() {
+            if (searchHistory.length > 0) {
+                historyContainer.innerHTML = '';
+                searchHistory.forEach(term => {
+                    const historyButton = document.createElement('button');
+                    historyButton.className = 'history-button';
+                    historyButton.innerHTML = `<i class="fas fa-history history-icon"></i>${term}`;
+                    historyButton.addEventListener('click', () => {
+                        searchInput.value = term;
+                        searchArticle(term);
+                    });
+                    historyContainer.appendChild(historyButton);
+                });
+                historySection.classList.remove('hidden');
+            } else {
+                historySection.classList.add('hidden');
+            }
+        }
 
         // Initialize animations
         function initAnimations() {
@@ -1408,6 +1685,22 @@
             });
         }
 
+        // Event listeners for startup
+        startupButton.addEventListener('click', () => {
+            // Animate startup button
+            anime({
+                targets: startupButton,
+                scale: [1, 0.9, 1.1],
+                duration: 600,
+                easing: 'easeOutElastic(1, .5)'
+            });
+            
+            // Animate startup screen transition
+            setTimeout(() => {
+                animatePageTransition(startupScreen, languageScreen);
+            }, 500);
+        });
+
         // Event listeners for language selection
         document.querySelectorAll('.language-button').forEach(button => {
             button.addEventListener('click', () => {
@@ -1497,27 +1790,55 @@
             // Show loading animation
             showLoadingAnimation();
 
+            // Save search to history
+            saveToHistory(term);
+
             try {
-                // Fetch Wikipedia article summary
-                const response = await fetch(`${WIKIPEDIA_API_BASE}/page/summary/${encodeURIComponent(term)}`);
-                
-                if (!response.ok) {
+                // Try DuckDuckGo API first
+                let duckDuckGoData = null;
+                try {
+                    const duckDuckGoResponse = await fetch(`${DUCKDUCKGO_API_BASE}?q=${encodeURIComponent(term)}&format=json&no_html=1&skip_disambig=1`);
+                    if (duckDuckGoResponse.ok) {
+                        duckDuckGoData = await duckDuckGoResponse.json();
+                    }
+                } catch (error) {
+                    console.error('Error fetching from DuckDuckGo:', error);
+                }
+
+                // Try Wikipedia API
+                let wikipediaData = null;
+                try {
+                    const wikipediaResponse = await fetch(`${WIKIPEDIA_API_BASE}/page/summary/${encodeURIComponent(term)}`);
+                    if (wikipediaResponse.ok) {
+                        wikipediaData = await wikipediaResponse.json();
+                    }
+                } catch (error) {
+                    console.error('Error fetching from Wikipedia:', error);
+                }
+
+                // Determine which data to use
+                let articleData = null;
+                if (wikipediaData && wikipediaData.title) {
+                    articleData = wikipediaData;
+                } else if (duckDuckGoData && duckDuckGoData.AbstractText) {
+                    articleData = duckDuckGoData;
+                } else {
                     throw new Error(translations[selectedLanguage].article_not_found);
                 }
-                
-                const data = await response.json();
-                
+
                 // Fetch images for the article
                 let images = [];
                 try {
-                    const imagesResponse = await fetch(`${WIKIPEDIA_API_BASE}/page/media-list/${encodeURIComponent(term)}`);
-                    if (imagesResponse.ok) {
-                        const imagesData = await imagesResponse.json();
-                        images = imagesData.items
-                            .filter(item => item.type === 'image')
-                            .slice(0, 3)
-                            .map(item => item.srcset && item.srcset[0] ? item.srcset[0].src : null)
-                            .filter(src => src);
+                    if (wikipediaData) {
+                        const imagesResponse = await fetch(`${WIKIPEDIA_API_BASE}/page/media-list/${encodeURIComponent(term)}`);
+                        if (imagesResponse.ok) {
+                            const imagesData = await imagesResponse.json();
+                            images = imagesData.items
+                                .filter(item => item.type === 'image')
+                                .slice(0, 3)
+                                .map(item => item.srcset && item.srcset[0] ? item.srcset[0].src : null)
+                                .filter(src => src);
+                        }
                     }
                 } catch (error) {
                     console.error('Error fetching images:', error);
@@ -1533,9 +1854,9 @@
                 }
 
                 const article = {
-                    title: data.title,
-                    summary: data.description || data.extract,
-                    content: data.extract,
+                    title: articleData.title || term,
+                    summary: articleData.description || articleData.AbstractText || articleData.extract,
+                    content: articleData.extract || articleData.AbstractText || articleData.Abstract,
                     images: images
                 };
 
@@ -1733,17 +2054,23 @@
             }
         }
 
-        // Initialize animations when the page loads
-        window.addEventListener('DOMContentLoaded', () => {
-            // Animate language screen entrance
+        // Initialize the application
+        function init() {
+            initParticles();
+            loadSearchHistory();
+            
+            // Animate startup screen entrance
             anime({
-                targets: '.language-content',
+                targets: '.startup-content',
                 scale: [0.8, 1],
                 opacity: [0, 1],
                 duration: 800,
                 easing: 'easeOutElastic(1, .5)'
             });
-        });
+        }
+
+        // Initialize when the page loads
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
