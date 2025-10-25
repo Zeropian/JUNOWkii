@@ -1356,8 +1356,6 @@
             }
         };
 
-        // Wikipedia API base 
-        const WIKIPEDIA_API_BASE = 'https://en.wikipedia.org/api/rest_v1';
         // DuckDuckGo API base
         const DUCKDUCKGO_API_BASE = 'https://api.duckduckgo.com/';
 
@@ -1794,57 +1792,42 @@
             saveToHistory(term);
 
             try {
-                // Try DuckDuckGo API first
-                let duckDuckGoData = null;
-                try {
-                    const duckDuckGoResponse = await fetch(`${DUCKDUCKGO_API_BASE}?q=${encodeURIComponent(term)}&format=json&no_html=1&skip_disambig=1`);
-                    if (duckDuckGoResponse.ok) {
-                        duckDuckGoData = await duckDuckGoResponse.json();
-                    }
-                } catch (error) {
-                    console.error('Error fetching from DuckDuckGo:', error);
+                // Use DuckDuckGo API
+                const duckDuckGoResponse = await fetch(`${DUCKDUCKGO_API_BASE}?q=${encodeURIComponent(term)}&format=json&no_html=1&skip_disambig=1`);
+                if (!duckDuckGoResponse.ok) {
+                    throw new Error(translations[selectedLanguage].error_fetching_data);
                 }
 
-                // Try Wikipedia API
-                let wikipediaData = null;
-                try {
-                    const wikipediaResponse = await fetch(`${WIKIPEDIA_API_BASE}/page/summary/${encodeURIComponent(term)}`);
-                    if (wikipediaResponse.ok) {
-                        wikipediaData = await wikipediaResponse.json();
-                    }
-                } catch (error) {
-                    console.error('Error fetching from Wikipedia:', error);
-                }
+                const duckDuckGoData = await duckDuckGoResponse.json();
 
-                // Determine which data to use
-                let articleData = null;
-                if (wikipediaData && wikipediaData.title) {
-                    articleData = wikipediaData;
-                } else if (duckDuckGoData && duckDuckGoData.AbstractText) {
-                    articleData = duckDuckGoData;
-                } else {
+                // Check if we have valid data
+                if (!duckDuckGoData.AbstractText && (!duckDuckGoData.RelatedTopics || duckDuckGoData.RelatedTopics.length === 0)) {
                     throw new Error(translations[selectedLanguage].article_not_found);
                 }
 
-                // Fetch images for the article
+                // Process images
                 let images = [];
-                try {
-                    if (wikipediaData) {
-                        const imagesResponse = await fetch(`${WIKIPEDIA_API_BASE}/page/media-list/${encodeURIComponent(term)}`);
-                        if (imagesResponse.ok) {
-                            const imagesData = await imagesResponse.json();
-                            images = imagesData.items
-                                .filter(item => item.type === 'image')
-                                .slice(0, 3)
-                                .map(item => item.srcset && item.srcset[0] ? item.srcset[0].src : null)
-                                .filter(src => src);
+                
+                // Use the main image from DuckDuckGo if available
+                if (duckDuckGoData.Image) {
+                    images.push(duckDuckGoData.Image);
+                }
+                
+                // Also check for images in related topics
+                if (duckDuckGoData.RelatedTopics) {
+                    duckDuckGoData.RelatedTopics.forEach(topic => {
+                        if (topic.Icon && topic.Icon.URL && images.length < 3) {
+                            // Make sure we have a full URL
+                            let imageUrl = topic.Icon.URL;
+                            if (!imageUrl.startsWith('http')) {
+                                imageUrl = 'https://duckduckgo.com' + imageUrl;
+                            }
+                            images.push(imageUrl);
                         }
-                    }
-                } catch (error) {
-                    console.error('Error fetching images:', error);
+                    });
                 }
 
-                // If no images found, use placeholder
+                // If no images found, use placeholders
                 if (images.length === 0) {
                     images = [
                         'https://placehold.co/400x300/1E3A8A/FFFFFF?text=No+Image+Available',
@@ -1853,10 +1836,13 @@
                     ];
                 }
 
+                // Create article data structure
                 const article = {
-                    title: articleData.title || term,
-                    summary: articleData.description || articleData.AbstractText || articleData.extract,
-                    content: articleData.extract || articleData.AbstractText || articleData.Abstract,
+                    title: duckDuckGoData.Heading || term,
+                    summary: duckDuckGoData.AbstractText || duckDuckGoData.Abstract || "No summary available.",
+                    content: duckDuckGoData.AbstractText || 
+                            (duckDuckGoData.RelatedTopics && duckDuckGoData.RelatedTopics[0] ? 
+                             duckDuckGoData.RelatedTopics[0].Text : "No content available."),
                     images: images
                 };
 
